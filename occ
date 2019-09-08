@@ -1,0 +1,9 @@
+
+CONTAINER=`docker container ls |grep nextcloud_www|cut -d" " -f1`
+
+#OCC='su - www-data -s /bin/bash -c "cd html; php occ"'
+#OCC='sudo -u www-data php occ'
+OCC="occ"
+
+docker container exec -it "${CONTAINER}" $OCC $@
+

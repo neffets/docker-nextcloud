@@ -6,6 +6,7 @@ RUN set -ex; \
     \
     apk add --no-cache \
         rsync \
+        sudo \
     ; \
     \
     rm /var/spool/cron/crontabs/root; \
@@ -31,10 +32,12 @@ RUN set -ex; \
         postgresql-dev \
         imagemagick-dev \
         libwebp-dev \
+        libc-client-dev libkrb5-dev \
     ; \
     \
     docker-php-ext-configure gd --with-freetype-dir=/usr --with-png-dir=/usr --with-jpeg-dir=/usr --with-webp-dir=/usr; \
     docker-php-ext-configure ldap; \
+    docker-php-ext-configure imap --with-kerberos --with-imap-ssl; \
     docker-php-ext-install -j "$(nproc)" \
         exif \
         gd \
@@ -45,6 +48,7 @@ RUN set -ex; \
         pdo_mysql \
         pdo_pgsql \
         zip \
+        imap \
     ; \
     \
 # pecl will claim success even if one install fails, so we need to perform each install separately
@@ -114,6 +118,9 @@ RUN set -ex; \
     mkdir -p /usr/src/nextcloud/data; \
     mkdir -p /usr/src/nextcloud/custom_apps; \
     chmod +x /usr/src/nextcloud/occ; \
+    echo '#!/bin/bash' >/usr/local/bin/occ \
+    echo 'sudo -u www-data php /var/www/html/occ $@' >>/usr/local/bin/occ \
+    chmod 0755 /usr/local/bin/occ \
     apk del .fetch-deps
 
 COPY *.sh upgrade.exclude /
