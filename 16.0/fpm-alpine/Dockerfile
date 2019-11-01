@@ -34,6 +34,7 @@ RUN set -ex; \
         imagemagick-dev \
         libwebp-dev \
         libc-client-dev libkrb5-dev \
+        gmp-dev \
     ; \
     \
     docker-php-ext-configure gd --with-freetype-dir=/usr --with-png-dir=/usr --with-jpeg-dir=/usr --with-webp-dir=/usr; \
@@ -50,6 +51,7 @@ RUN set -ex; \
         pdo_pgsql \
         zip \
         imap \
+        gmp \
     ; \
     \
 # pecl will claim success even if one install fails, so we need to perform each install separately

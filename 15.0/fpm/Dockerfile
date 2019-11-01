@@ -39,10 +39,13 @@ RUN set -ex; \
         libzip-dev \
         libwebp-dev \
         libc-client-dev libkrb5-dev \
+        libgmp-dev \
     ; \
     \
     debMultiarch="$(dpkg-architecture --query DEB_BUILD_MULTIARCH)"; \
+    if [ ! -e /usr/include/gmp.h ]; then ln -s /usr/include/$debMultiarch/gmp.h /usr/include/gmp.h; fi;\
     docker-php-ext-configure gd --with-freetype-dir=/usr --with-png-dir=/usr --with-jpeg-dir=/usr --with-webp-dir=/usr; \
+    docker-php-ext-configure gmp --with-gmp="/usr/include/$debMultiarch"; \
     docker-php-ext-configure ldap --with-libdir="lib/$debMultiarch"; \
     docker-php-ext-configure imap --with-kerberos --with-imap-ssl; \
     docker-php-ext-install -j "$(nproc)" \
@@ -56,6 +59,7 @@ RUN set -ex; \
         pdo_pgsql \
         zip \
         imap \
+        gmp \
     ; \
     \
 # pecl will claim success even if one install fails, so we need to perform each install separately

@@ -3,7 +3,6 @@ set -eo pipefail
 
 declare -A php_version=(
 	[default]='7.3'
-	[14.0]='7.2'
 )
 
 declare -A cmd=(
@@ -22,6 +21,12 @@ declare -A extras=(
 	[apache]='\nRUN a2enmod rewrite remoteip ;\\\n    {\\\n     echo RemoteIPHeader X-Real-IP ;\\\n     echo RemoteIPTrustedProxy 10.0.0.0/8 ;\\\n     echo RemoteIPTrustedProxy 172.16.0.0/12 ;\\\n     echo RemoteIPTrustedProxy 192.168.0.0/16 ;\\\n    } > /etc/apache2/conf-available/remoteip.conf;\\\n    a2enconf remoteip'
 	[fpm]=''
 	[fpm-alpine]=''
+)
+
+declare -A crontab_int=(
+	[default]='5'
+	[16.0]='15'
+	[15.0]='15'
 )
 
 apcu_version="$(
@@ -73,7 +78,7 @@ variants=(
 	fpm-alpine
 )
 
-min_version='14.0'
+min_version='15.0'
 
 # version_greater_or_equal A B returns whether A >= B
 function version_greater_or_equal() {
@@ -100,6 +105,7 @@ travisEnv=
 function create_variant() {
 	dir="$1/$variant"
 	phpVersion=${php_version[$version]-${php_version[default]}}
+	crontabInt=${crontab_int[$version]-${crontab_int[default]}}
 
 	# Create the version+variant directory with a Dockerfile.
 	mkdir -p "$dir"
@@ -122,6 +128,7 @@ function create_variant() {
 		s/%%MEMCACHED_VERSION%%/'"${pecl_versions[memcached]}"'/g;
 		s/%%REDIS_VERSION%%/'"${pecl_versions[redis]}"'/g;
 		s/%%IMAGICK_VERSION%%/'"${pecl_versions[imagick]}"'/g;
+		s/%%CRONTAB_INT%%/'"$crontabInt"'/g;
 	' "$dir/Dockerfile"
 
 	if [[ "$phpVersion" != 7.3 ]]; then
