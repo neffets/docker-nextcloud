@@ -26,7 +26,6 @@ declare -A extras=(
 declare -A crontab_int=(
 	[default]='5'
 	[16.0]='15'
-	[15.0]='15'
 )
 
 apcu_version="$(
