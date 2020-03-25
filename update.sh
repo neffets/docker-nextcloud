@@ -77,7 +77,7 @@ variants=(
 	fpm-alpine
 )
 
-min_version='15.0'
+min_version='16.0'
 
 # version_greater_or_equal A B returns whether A >= B
 function version_greater_or_equal() {
@@ -156,6 +156,12 @@ function create_variant() {
 		travisEnv='    - env: VERSION='"$1"' VARIANT='"$variant"' ARCH='"$arch"'\n'"$travisEnv"
 	done
 }
+
+curl -fsSL 'https://download.nextcloud.com/server/releases/' |tac|tac| \
+	grep -oE 'nextcloud-[[:digit:]]+(\.[[:digit:]]+){2}' | \
+	grep -oE '[[:digit:]]+(\.[[:digit:]]+){2}' | \
+	sort -uV | \
+	tail -1 > latest.txt
 
 find . -maxdepth 1 -type d -regextype sed -regex '\./[[:digit:]]\+\.[[:digit:]]\+\(-rc\|-beta\|-alpha\)\?' -exec rm -r '{}' \;
 
