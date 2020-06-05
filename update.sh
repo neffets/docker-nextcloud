@@ -2,7 +2,10 @@
 set -eo pipefail
 
 declare -A php_version=(
-	[default]='7.3'
+	[default]='7.4'
+	[18.0]='7.3'
+	[17.0]='7.3'
+	[16.0]='7.3'
 )
 
 declare -A cmd=(
@@ -67,7 +70,7 @@ imagick_version="$(
 declare -A pecl_versions=(
 	[APCu]="$apcu_version"
 	[memcached]="$memcached_version"
-	[redis]="4.3.0"
+	[redis]="$redis_version"
 	[imagick]="$imagick_version"
 )
 
@@ -130,11 +133,29 @@ function create_variant() {
 		s/%%CRONTAB_INT%%/'"$crontabInt"'/g;
 	' "$dir/Dockerfile"
 
-	if [[ "$phpVersion" != 7.3 ]]; then
-		sed -ri \
-			-e '/libzip-dev/d' \
-			"$dir/Dockerfile"
-	fi
+	case "$phpVersion" in
+		7.4 )
+			sed -ri -e '
+				\@docker-php-ext-configure gmp --with-gmp@d;
+				\@/usr/include/gmp.h@d;
+				' "$dir/Dockerfile"
+			;;
+		7.3 )
+			sed -ri -e '
+				s@gd --with-freetype --with-jpeg --with-webp@gd --with-freetype-dir=/usr --with-png-dir=/usr --with-jpeg-dir=/usr --with-webp-dir=/usr@g;
+				' "$dir/Dockerfile"
+			;;
+	esac
+
+	case "$version" in
+		16.*|17.*|18.* )
+			sed -ri -e '
+				\@bcmath@d;
+				s/'"redis-${pecl_versions[redis]}"'/redis-4.3.0/g;
+				' "$dir/Dockerfile"
+			;;
+
+	esac
 
 	# Copy the shell scripts
 	for name in entrypoint cron; do
