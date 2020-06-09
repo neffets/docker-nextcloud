@@ -498,3 +498,4 @@ docker-compose exec app chown -R www-data:www-data /var/www/html/custom_apps
 
 # Questions / Issues
 If you got any questions or problems using the image, please visit our [Github Repository](https://github.com/nextcloud/docker) and write an issue.
+date: 2020-06-09
