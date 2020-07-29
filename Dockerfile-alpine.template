@@ -32,7 +32,7 @@ RUN set -ex; \
         postgresql-dev \
         imagemagick-dev \
         libwebp-dev \
-        libc-client-dev libkrb5-dev \
+        imap-dev krb5-dev \
         gmp-dev \
     ; \
     \
