@@ -104,6 +104,7 @@ RUN set -ex; \
     apk add --no-cache --virtual .fetch-deps \
         bzip2 \
         gnupg \
+        perl \
     ; \
     \
     curl -fsSL -o nextcloud.tar.bz2 \
