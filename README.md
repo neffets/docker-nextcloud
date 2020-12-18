@@ -1,6 +1,7 @@
 # What is Nextcloud?
 
-[![Build Status Travis](https://travis-ci.org/nextcloud/docker.svg?branch=master)](https://travis-ci.org/nextcloud/docker)
+[![GitHub CI build status badge](https://github.com/nextcloud/docker/workflows/Images/badge.svg)](https://github.com/nextcloud/docker/actions?query=workflow%3AImages)
+[![update.sh build status badge](https://github.com/nextcloud/docker/workflows/update.sh/badge.svg)](https://github.com/nextcloud/docker/actions?query=workflow%3Aupdate.sh)
 [![amd64 build status badge](https://img.shields.io/jenkins/s/https/doi-janky.infosiftr.net/job/multiarch/job/amd64/job/nextcloud.svg?label=amd64)](https://doi-janky.infosiftr.net/job/multiarch/job/amd64/job/nextcloud)
 [![arm32v5 build status badge](https://img.shields.io/jenkins/s/https/doi-janky.infosiftr.net/job/multiarch/job/arm32v5/job/nextcloud.svg?label=arm32v5)](https://doi-janky.infosiftr.net/job/multiarch/job/arm32v5/job/nextcloud)
 [![arm32v6 build status badge](https://img.shields.io/jenkins/s/https/doi-janky.infosiftr.net/job/multiarch/job/arm32v6/job/nextcloud.svg?label=arm32v6)](https://doi-janky.infosiftr.net/job/multiarch/job/arm32v6/job/nextcloud)
@@ -170,6 +171,20 @@ To use an external S3 compatible object store as primary storage, set the follow
 
 Check the [Nextcloud documentation](https://docs.nextcloud.com/server/latest/admin_manual/configuration_files/primary_storage.html#simple-storage-service-s3) for more information.
 
+To use an external OpenStack Swift object store as primary storage, set the following variables:
+- `OBJECTSTORE_SWIFT_URL`: The Swift identity (Keystone) endpoint
+- `OBJECTSTORE_SWIFT_AUTOCREATE` (default: `false`): Whether or not Nextcloud should automatically create the Swift container
+- `OBJECTSTORE_SWIFT_USER_NAME`: Swift username
+- `OBJECTSTORE_SWIFT_USER_PASSWORD`: Swift user password
+- `OBJECTSTORE_SWIFT_USER_DOMAIN` (default: `Default`): Swift user domain 
+- `OBJECTSTORE_SWIFT_PROJECT_NAME`: OpenStack project name
+- `OBJECTSTORE_SWIFT_PROJECT_DOMAIN` (default: `Default`): OpenStack project domain
+- `OBJECTSTORE_SWIFT_SERVICE_NAME` (default: `swift`): Swift service name
+- `OBJECTSTORE_SWIFT_SERVICE_REGION`: Swift endpoint region
+- `OBJECTSTORE_SWIFT_CONTAINER_NAME`: Swift container (bucket) that Nextcloud should store the data in
+
+Check the [Nextcloud documentation](https://docs.nextcloud.com/server/latest/admin_manual/configuration_files/primary_storage.html#openstack-swift) for more information.
+
 
 ## Using the apache image behind a reverse proxy and auto configure server host and protocol
 
@@ -226,9 +241,14 @@ services:
       - 8080:80
     links:
       - db
+    restart: always
     volumes:
       - nextcloud:/var/www/html
-    restart: always
+    environment:
+      - MYSQL_PASSWORD=
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+      - MYSQL_HOST=db
 
 ```
 
@@ -237,7 +257,7 @@ Then run `docker-compose up -d`, now you can access Nextcloud at http://localhos
 ## Base version - FPM
 When using the FPM image, you need another container that acts as web server on port 80 and proxies the requests to the Nextcloud container. In this example a simple nginx container is combined with the Nextcloud-fpm image and a MariaDB database container. The data is stored in docker volumes. The nginx container also needs access to static files from your Nextcloud installation. It gets access to all the volumes mounted to Nextcloud via the `volumes_from` option.The configuration for nginx is stored in the configuration file `nginx.conf`, that is mounted into the container. An example can be found in the examples section [here](https://github.com/nextcloud/docker/tree/master/.examples).
 
-As this setup does **not include encryption**, it should to be run behind a proxy.
+As this setup does **not include encryption**, it should be run behind a proxy.
 
 Make sure to pass in values for `MYSQL_ROOT_PASSWORD` and `MYSQL_PASSWORD` variables before you run this setup.
 
@@ -265,9 +285,14 @@ services:
     image: nextcloud:fpm
     links:
       - db
+    restart: always
     volumes:
       - nextcloud:/var/www/html
-    restart: always
+    environment:
+      - MYSQL_PASSWORD=
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+      - MYSQL_HOST=db
 
   web:
     image: nginx
