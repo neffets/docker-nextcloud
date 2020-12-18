@@ -253,3 +253,10 @@ for version in "${versions_alpha[@]}"; do
 		fi
 	fi
 done
+
+##STS
+grep -v NEXTCLOUD_VERSION README.md >tmp.README.md
+mv -f tmp.README.md README.md
+grep -h "ENV NEXTCLOUD_VERSION" -R [0-9]*|sort|uniq >>README.md
+date +"Last updated: %Y-%m-%d" >>README.md
+
