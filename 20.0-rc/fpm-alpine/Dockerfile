@@ -1,5 +1,5 @@
 # DO NOT EDIT: created by update.sh from Dockerfile-alpine.template
-FROM php:7.3-fpm-alpine3.12
+FROM php:7.4-fpm-alpine3.13
 
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
@@ -37,10 +37,11 @@ RUN set -ex; \
         gmp-dev \
     ; \
     \
-    docker-php-ext-configure gd --with-freetype-dir=/usr --with-png-dir=/usr --with-jpeg-dir=/usr --with-webp-dir=/usr; \
+    docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp; \
     docker-php-ext-configure ldap; \
     docker-php-ext-configure imap --with-kerberos --with-imap-ssl; \
     docker-php-ext-install -j "$(nproc)" \
+        bcmath \
         exif \
         gd \
         intl \
@@ -57,7 +58,7 @@ RUN set -ex; \
 # pecl will claim success even if one install fails, so we need to perform each install separately
     pecl install APCu-5.1.19; \
     pecl install memcached-3.1.5; \
-    pecl install redis-4.3.0; \
+    pecl install redis-5.3.3; \
     pecl install imagick-3.4.4; \
     \
     docker-php-ext-enable \
@@ -98,7 +99,7 @@ RUN { \
 VOLUME /var/www/html
 
 
-ENV NEXTCLOUD_VERSION 18.0.14
+ENV NEXTCLOUD_VERSION 20.0.8RC1
 
 RUN set -ex; \
     apk add --no-cache --virtual .fetch-deps \
@@ -108,9 +109,9 @@ RUN set -ex; \
     ; \
     \
     curl -fsSL -o nextcloud.tar.bz2 \
-        "https://download.nextcloud.com/server/releases/nextcloud-${NEXTCLOUD_VERSION}.tar.bz2"; \
+        "https://download.nextcloud.com/server/prereleases/nextcloud-${NEXTCLOUD_VERSION}.tar.bz2"; \
     curl -fsSL -o nextcloud.tar.bz2.asc \
-        "https://download.nextcloud.com/server/releases/nextcloud-${NEXTCLOUD_VERSION}.tar.bz2.asc"; \
+        "https://download.nextcloud.com/server/prereleases/nextcloud-${NEXTCLOUD_VERSION}.tar.bz2.asc"; \
     export GNUPGHOME="$(mktemp -d)"; \
 # gpg key from https://nextcloud.com/nextcloud.asc
     gpg --batch --keyserver ha.pool.sks-keyservers.net --recv-keys 28806A878AE423A28372792ED75899B9A724937A; \

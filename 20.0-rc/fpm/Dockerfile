@@ -1,44 +1,50 @@
-# DO NOT EDIT: created by update.sh from Dockerfile-alpine.template
-FROM php:7.4-fpm-alpine3.13
+# DO NOT EDIT: created by update.sh from Dockerfile-debian.template
+FROM php:7.4-fpm-buster
 
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
     \
-    apk add --no-cache \
+    apt-get update; \
+    apt-get install -y --no-install-recommends \
         rsync \
+        bzip2 \
+        busybox-static \
         sudo \
     ; \
+    rm -rf /var/lib/apt/lists/*; \
     \
-    rm /var/spool/cron/crontabs/root; \
+    mkdir -p /var/spool/cron/crontabs; \
     echo '*/5 * * * * php -f /var/www/html/cron.php' > /var/spool/cron/crontabs/www-data
 
 # install the PHP extensions we need
 # see https://docs.nextcloud.com/server/stable/admin_manual/installation/source_installation.html
 RUN set -ex; \
     \
-    apk add --no-cache --virtual .build-deps \
-        $PHPIZE_DEPS \
-        autoconf \
-        freetype-dev \
-        icu-dev \
+    savedAptMark="$(apt-mark showmanual)"; \
+    \
+    apt-get update; \
+    apt-get install -y --no-install-recommends \
+        libcurl4-openssl-dev \
         libevent-dev \
-        libjpeg-turbo-dev \
+        libfreetype6-dev \
+        libicu-dev \
+        libjpeg-dev \
+        libldap2-dev \
         libmcrypt-dev \
-        libpng-dev \
         libmemcached-dev \
+        libpng-dev \
+        libpq-dev \
         libxml2-dev \
+        libmagickwand-dev \
         libzip-dev \
-        openldap-dev \
-        pcre-dev \
-        postgresql-dev \
-        imagemagick-dev \
         libwebp-dev \
-        imap-dev krb5-dev \
-        gmp-dev \
+        libc-client-dev libkrb5-dev \
+        libgmp-dev \
     ; \
     \
+    debMultiarch="$(dpkg-architecture --query DEB_BUILD_MULTIARCH)"; \
     docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp; \
-    docker-php-ext-configure ldap; \
+    docker-php-ext-configure ldap --with-libdir="lib/$debMultiarch"; \
     docker-php-ext-configure imap --with-kerberos --with-imap-ssl; \
     docker-php-ext-install -j "$(nproc)" \
         bcmath \
@@ -68,14 +74,19 @@ RUN set -ex; \
         imagick \
     ; \
     \
-    runDeps="$( \
-        scanelf --needed --nobanner --format '%n#p' --recursive /usr/local/lib/php/extensions \
-            | tr ',' '\n' \
-            | sort -u \
-            | awk 'system("[ -e /usr/local/lib/" $1 " ]") == 0 { next } { print "so:" $1 }' \
-    )"; \
-    apk add --virtual .nextcloud-phpext-rundeps $runDeps; \
-    apk del .build-deps
+# reset apt-mark's "manual" list so that "purge --auto-remove" will remove all build dependencies
+    apt-mark auto '.*' > /dev/null; \
+    apt-mark manual $savedAptMark; \
+    ldd "$(php -r 'echo ini_get("extension_dir");')"/*.so \
+        | awk '/=>/ { print $3 }' \
+        | sort -u \
+        | xargs -r dpkg-query -S \
+        | cut -d: -f1 \
+        | sort -u \
+        | xargs -rt apt-mark manual; \
+    \
+    apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \
+    rm -rf /var/lib/apt/lists/*
 
 # set recommended PHP.ini settings
 # see https://docs.nextcloud.com/server/12/admin_manual/configuration_server/server_tuning.html#enable-php-opcache
@@ -99,19 +110,20 @@ RUN { \
 VOLUME /var/www/html
 
 
-ENV NEXTCLOUD_VERSION 19.0.8
+ENV NEXTCLOUD_VERSION 20.0.8RC1
 
 RUN set -ex; \
-    apk add --no-cache --virtual .fetch-deps \
-        bzip2 \
+    fetchDeps=" \
         gnupg \
-        perl \
-    ; \
+        dirmngr \
+    "; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends $fetchDeps; \
     \
     curl -fsSL -o nextcloud.tar.bz2 \
-        "https://download.nextcloud.com/server/releases/nextcloud-${NEXTCLOUD_VERSION}.tar.bz2"; \
+        "https://download.nextcloud.com/server/prereleases/nextcloud-${NEXTCLOUD_VERSION}.tar.bz2"; \
     curl -fsSL -o nextcloud.tar.bz2.asc \
-        "https://download.nextcloud.com/server/releases/nextcloud-${NEXTCLOUD_VERSION}.tar.bz2.asc"; \
+        "https://download.nextcloud.com/server/prereleases/nextcloud-${NEXTCLOUD_VERSION}.tar.bz2.asc"; \
     export GNUPGHOME="$(mktemp -d)"; \
 # gpg key from https://nextcloud.com/nextcloud.asc
     gpg --batch --keyserver ha.pool.sks-keyservers.net --recv-keys 28806A878AE423A28372792ED75899B9A724937A; \
@@ -126,7 +138,9 @@ RUN set -ex; \
     echo '#!/bin/bash' >/usr/local/bin/occ \
     echo 'sudo -u www-data php /var/www/html/occ $@' >>/usr/local/bin/occ \
     chmod 0755 /usr/local/bin/occ \
-    apk del .fetch-deps
+    \
+    apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $fetchDeps; \
+    rm -rf /var/lib/apt/lists/*
 
 COPY *.sh upgrade.exclude /
 COPY config/* /usr/src/nextcloud/config/
