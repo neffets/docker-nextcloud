@@ -56,9 +56,9 @@ RUN set -ex; \
     ; \
     \
 # pecl will claim success even if one install fails, so we need to perform each install separately
-    pecl install APCu-5.1.19; \
+    pecl install APCu-5.1.20; \
     pecl install memcached-3.1.5; \
-    pecl install redis-5.3.3; \
+    pecl install redis-5.3.4; \
     pecl install imagick-3.4.4; \
     \
     docker-php-ext-enable \
@@ -78,7 +78,9 @@ RUN set -ex; \
     apk del .build-deps
 
 # set recommended PHP.ini settings
-# see https://docs.nextcloud.com/server/12/admin_manual/configuration_server/server_tuning.html#enable-php-opcache
+# see https://docs.nextcloud.com/server/stable/admin_manual/configuration_server/server_tuning.html#enable-php-opcache
+ENV PHP_MEMORY_LIMIT 512M
+ENV PHP_UPLOAD_LIMIT 512M
 RUN { \
         echo 'opcache.enable=1'; \
         echo 'opcache.interned_strings_buffer=8'; \
@@ -90,7 +92,11 @@ RUN { \
     \
     echo 'apc.enable_cli=1' >> /usr/local/etc/php/conf.d/docker-php-ext-apcu.ini; \
     \
-    echo 'memory_limit=512M' > /usr/local/etc/php/conf.d/memory-limit.ini; \
+    { \
+        echo 'memory_limit=${PHP_MEMORY_LIMIT}'; \
+        echo 'upload_max_filesize=${PHP_UPLOAD_LIMIT}'; \
+        echo 'post_max_size=${PHP_UPLOAD_LIMIT}'; \
+    } > /usr/local/etc/php/conf.d/nextcloud.ini; \
     \
     mkdir /var/www/data; \
     chown -R www-data:root /var/www; \

@@ -519,9 +519,8 @@ docker-compose exec app chown -R www-data:www-data /var/www/html/custom_apps
 # Questions / Issues
 If you got any questions or problems using the image, please visit our [Github Repository](https://github.com/nextcloud/docker) and write an issue.
 
-Last updated: 2021-02-19
 ENV NEXTCLOUD_VERSION 18.0.14
 ENV NEXTCLOUD_VERSION 19.0.9
 ENV NEXTCLOUD_VERSION 20.0.8
 ENV NEXTCLOUD_VERSION 21.0.0
-Last updated: 2021-02-24
+Last updated: 2021-03-24
