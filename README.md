@@ -151,6 +151,8 @@ To use an external S3 compatible object store as primary storage, set the follow
 - `OBJECTSTORE_S3_SSL` (default: `true`): Whether or not SSL/TLS should be used to communicate with object storage server
 - `OBJECTSTORE_S3_REGION`: The region that the S3 bucket resides in.
 - `OBJECTSTORE_S3_USEPATH_STYLE` (default: `false`): Not required for AWS S3
+- `OBJECTSTORE_S3_OBJECT_PREFIX` (default: `urn:oid:`): Prefix to prepend to the fileid
+- `OBJECTSTORE_S3_AUTOCREATE` (default: `true`): Create the container if it does not exist
 
 Check the [Nextcloud documentation](https://docs.nextcloud.com/server/latest/admin_manual/configuration_files/primary_storage.html#simple-storage-service-s3) for more information.
 
@@ -167,6 +169,10 @@ To use an external OpenStack Swift object store as primary storage, set the foll
 - `OBJECTSTORE_SWIFT_CONTAINER_NAME`: Swift container (bucket) that Nextcloud should store the data in
 
 Check the [Nextcloud documentation](https://docs.nextcloud.com/server/latest/admin_manual/configuration_files/primary_storage.html#openstack-swift) for more information.
+
+To customize other PHP limits you can simply change the following variables:
+- `PHP_MEMORY_LIMIT` (default `512M`) This sets the maximum amount of memory in bytes that a script is allowed to allocate. This is meant to help prevent poorly written scripts from eating up all available memory but it can prevent normal operation if set too tight.
+- `PHP_UPLOAD_LIMIT` (default `512M`) This sets the upload limit (`post_max_size` and `upload_max_filesize`) for big files. Note that you may have to change other limits depending on your client, webserver or operating system. Check the [Nextcloud documentation](https://docs.nextcloud.com/server/latest/admin_manual/configuration_files/big_file_upload_configuration.html) for more information.
 
 
 ## Using the apache image behind a reverse proxy and auto configure server host and protocol
@@ -448,73 +454,75 @@ You're already using Nextcloud and want to switch to docker? Great! Here are som
 
 1. Define your whole Nextcloud infrastructure in a `docker-compose` file and run it with `docker-compose up -d` to get the base installation, volumes and database. Work from there.
 2. Restore your database from a mysqldump (nextcloud\_db\_1 is the name of your db container)
-  - To import from a MySQL dump use the following commands
+    - To import from a MySQL dump use the following commands
     ```console
     docker cp ./database.dmp nextcloud_db_1:/dmp
     docker-compose exec db sh -c "mysql -u USER -pPASSWORD nextcloud < /dmp"
     docker-compose exec db rm /dmp
     ```
-  - To import from a PostgreSQL dump use to following commands
+    - To import from a PostgreSQL dump use to following commands
     ```console
     docker cp ./database.dmp nextcloud_db_1:/dmp
     docker-compose exec db sh -c "psql -U USER --set ON_ERROR_STOP=on nextcloud < /dmp"
     docker-compose exec db rm /dmp
     ```
 3. Edit your config.php
-  1. Set database connection
-     - In case of MySQL database
-      ```php
-      'dbhost' => 'db:3306',
-      ```
-     - In case of PostgreSQL database
-      ```php
-      'dbhost' => 'db:5432',
-      ```
-  2. Make sure you have no configuration for the `apps_paths`. Delete lines like these
-  ```diff
-  - 'apps_paths' => array (
-  -     0 => array (
-  -         'path' => OC::$SERVERROOT.'/apps',
-  -         'url' => '/apps',
-  -         'writable' => true,
-  -     ),
-  - ),
-  ```
-  3. Make sure to have the `apps` directory non writable and the `custom_apps` directory writable
-  ```php
-  'apps_paths' => array (
-    0 => array (
-      'path' => '/var/www/html/apps',
-      'url' => '/apps',
-      'writable' => false,
-    ),
-    1 => array (
-      'path' => '/var/www/html/custom_apps',
-      'url' => '/custom_apps',
-      'writable' => true,
-    ),
-  ),
-  ```
-  4. Make sure your data directory is set to /var/www/html/data
-  ```php
-  'datadirectory' => '/var/www/html/data',
-  ```
-
-
+    1. Set database connection
+        - In case of MySQL database
+        ```php
+        'dbhost' => 'db:3306',
+        ```
+        - In case of PostgreSQL database
+        ```php
+        'dbhost' => 'db:5432',
+        ```
+    2. Make sure you have no configuration for the `apps_paths`. Delete lines like these
+        ```diff
+          - 'apps_paths' => array (
+          -     0 => array (
+          -         'path' => OC::$SERVERROOT.'/apps',
+          -         'url' => '/apps',
+          -         'writable' => true,
+          -     ),
+          - ),
+          ```
+    3. Make sure to have the `apps` directory non writable and the `custom_apps` directory writable
+        ```php
+        'apps_paths' => array (
+          0 => array (
+            'path' => '/var/www/html/apps',
+            'url' => '/apps',
+            'writable' => false,
+          ),
+          1 => array (
+            'path' => '/var/www/html/custom_apps',
+            'url' => '/custom_apps',
+            'writable' => true,
+          ),
+        ),
+        ```
+    4. Make sure your data directory is set to /var/www/html/data
+        ```php
+        'datadirectory' => '/var/www/html/data',
+        ```
 4. Copy your data (nextcloud_app_1 is the name of your Nextcloud container):
-```console
-docker cp ./data/ nextcloud_app_1:/var/www/html/
-docker-compose exec app chown -R www-data:www-data /var/www/html/data
-docker cp ./theming/ nextcloud_app_1:/var/www/html/
-docker-compose exec app chown -R www-data:www-data /var/www/html/theming
-docker cp ./config/config.php nextcloud_app_1:/var/www/html/config
-docker-compose exec app chown -R www-data:www-data /var/www/html/config
-```
+    ```console
+    docker cp ./data/ nextcloud_app_1:/var/www/html/
+    docker-compose exec app chown -R www-data:www-data /var/www/html/data
+    docker cp ./theming/ nextcloud_app_1:/var/www/html/
+    docker-compose exec app chown -R www-data:www-data /var/www/html/theming
+    docker cp ./config/config.php nextcloud_app_1:/var/www/html/config
+    docker-compose exec app chown -R www-data:www-data /var/www/html/config
+    ```
+    If you want to preserve the metadata of your files like timestamps, copy the data directly on the host to the named volume using plain `cp` like this:
+    ```console
+    cp --preserve --recursive ./data/ /path/to/nextcloudVolume/data
+    ```
 5. Copy only the custom apps you use (or simply redownload them from the web interface):
-```console
-docker cp ./custom_apps/ nextcloud_data:/var/www/html/
-docker-compose exec app chown -R www-data:www-data /var/www/html/custom_apps
-```
+    ```console
+    docker cp ./custom_apps/ nextcloud_data:/var/www/html/
+    docker-compose exec app chown -R www-data:www-data /var/www/html/custom_apps
+    ```
 
 # Questions / Issues
 If you got any questions or problems using the image, please visit our [Github Repository](https://github.com/nextcloud/docker) and write an issue.
@@ -523,4 +531,4 @@ ENV NEXTCLOUD_VERSION 18.0.14
 ENV NEXTCLOUD_VERSION 19.0.9
 ENV NEXTCLOUD_VERSION 20.0.8
 ENV NEXTCLOUD_VERSION 21.0.0
-Last updated: 2021-03-24
+Last updated: 2021-04-05
