@@ -75,6 +75,7 @@ RUN set -ex; \
         redis \
         imagick \
     ; \
+    rm -r /tmp/pear; \
     \
 # reset apt-mark's "manual" list so that "purge --auto-remove" will remove all build dependencies
     apt-mark auto '.*' > /dev/null; \
@@ -124,7 +125,7 @@ RUN a2enmod headers rewrite remoteip ;\
     } > /etc/apache2/conf-available/remoteip.conf;\
     a2enconf remoteip
 
-ENV NEXTCLOUD_VERSION 19.0.9
+ENV NEXTCLOUD_VERSION 19.0.10
 
 RUN set -ex; \
     fetchDeps=" \

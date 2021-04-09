@@ -67,6 +67,7 @@ RUN set -ex; \
         redis \
         imagick \
     ; \
+    rm -r /tmp/pear; \
     \
     runDeps="$( \
         scanelf --needed --nobanner --format '%n#p' --recursive /usr/local/lib/php/extensions \
@@ -105,7 +106,7 @@ RUN { \
 VOLUME /var/www/html
 
 
-ENV NEXTCLOUD_VERSION 20.0.8
+ENV NEXTCLOUD_VERSION 20.0.9
 
 RUN set -ex; \
     apk add --no-cache --virtual .fetch-deps \

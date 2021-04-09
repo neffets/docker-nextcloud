@@ -75,6 +75,7 @@ RUN set -ex; \
         redis \
         imagick \
     ; \
+    rm -r /tmp/pear; \
     \
 # reset apt-mark's "manual" list so that "purge --auto-remove" will remove all build dependencies
     apt-mark auto '.*' > /dev/null; \
@@ -116,7 +117,7 @@ RUN { \
 VOLUME /var/www/html
 
 
-ENV NEXTCLOUD_VERSION 20.0.8
+ENV NEXTCLOUD_VERSION 20.0.9
 
 RUN set -ex; \
     fetchDeps=" \

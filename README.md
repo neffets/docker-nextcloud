@@ -151,6 +151,7 @@ To use an external S3 compatible object store as primary storage, set the follow
 - `OBJECTSTORE_S3_SSL` (default: `true`): Whether or not SSL/TLS should be used to communicate with object storage server
 - `OBJECTSTORE_S3_REGION`: The region that the S3 bucket resides in.
 - `OBJECTSTORE_S3_USEPATH_STYLE` (default: `false`): Not required for AWS S3
+- `OBJECTSTORE_S3_LEGACYAUTH` (default: `false`): Not required for AWS S3
 - `OBJECTSTORE_S3_OBJECT_PREFIX` (default: `urn:oid:`): Prefix to prepend to the fileid
 - `OBJECTSTORE_S3_AUTOCREATE` (default: `true`): Create the container if it does not exist
 
@@ -165,7 +166,7 @@ To use an external OpenStack Swift object store as primary storage, set the foll
 - `OBJECTSTORE_SWIFT_PROJECT_NAME`: OpenStack project name
 - `OBJECTSTORE_SWIFT_PROJECT_DOMAIN` (default: `Default`): OpenStack project domain
 - `OBJECTSTORE_SWIFT_SERVICE_NAME` (default: `swift`): Swift service name
-- `OBJECTSTORE_SWIFT_SERVICE_REGION`: Swift endpoint region
+- `OBJECTSTORE_SWIFT_REGION`: Swift endpoint region
 - `OBJECTSTORE_SWIFT_CONTAINER_NAME`: Swift container (bucket) that Nextcloud should store the data in
 
 Check the [Nextcloud documentation](https://docs.nextcloud.com/server/latest/admin_manual/configuration_files/primary_storage.html#openstack-swift) for more information.
@@ -358,7 +359,7 @@ secrets:
     file: ./postgres_user.txt # put postgresql username to this file
 ```
 
-Currently, this is only supported for `NEXTCLOUD_ADMIN_PASSWORD`, `NEXTCLOUD_ADMIN_USER`, `MYSQL_DB`, `MYSQL_PASSWORD`, `MYSQL_USER`, `POSTGRES_DB`, `POSTGRES_PASSWORD`, `POSTGRES_USER` and `REDIS_HOST_PASSWORD`.
+Currently, this is only supported for `NEXTCLOUD_ADMIN_PASSWORD`, `NEXTCLOUD_ADMIN_USER`, `MYSQL_DATABASE`, `MYSQL_PASSWORD`, `MYSQL_USER`, `POSTGRES_DB`, `POSTGRES_PASSWORD`, `POSTGRES_USER` and `REDIS_HOST_PASSWORD`.
 
 # Make your Nextcloud available from the internet
 Until here, your Nextcloud is just available from your docker host. If you want your Nextcloud available from the internet adding SSL encryption is mandatory.
