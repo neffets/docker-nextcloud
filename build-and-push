@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# manual autobuild
+for VERSION in \
+    "18.0" \
+    "19.0" \
+    "20.0" \
+    "21.0" \
+    "22.0" \
+    ;
+do
+    echo "VERSION $VERSION"
+    docker build -t neffets/nextcloud:${VERSION} -f ${VERSION}/apache/Dockerfile ${VERSION}/apache/
+    docker push neffets/nextcloud:${VERSION}
+done
+
