@@ -1,5 +1,7 @@
 #!/bin/bash
 
+LatestVERSION="21.0"
+
 # manual autobuild
 for VERSION in \
     "18.0" \
@@ -10,7 +12,10 @@ for VERSION in \
     ;
 do
     echo "VERSION $VERSION"
-    docker build -t neffets/nextcloud:${VERSION} -f ${VERSION}/apache/Dockerfile ${VERSION}/apache/
+    LATEST=
+    [ "${LatestVERSION}" == "${VERSION}" ] && LATEST="-t neffets/nextcloud:latest"
+    docker build -t neffets/nextcloud:${VERSION} ${LATEST} -f ${VERSION}/apache/Dockerfile ${VERSION}/apache/
     docker push neffets/nextcloud:${VERSION}
+    [ -s "${LATEST}" ] && docker push neffets/nextcloud:latest
 done
 
