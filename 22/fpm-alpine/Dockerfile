@@ -1,4 +1,5 @@
-FROM php:%%PHP_VERSION%%-%%VARIANT%%3.14
+# DO NOT EDIT: created by update.sh from Dockerfile-alpine.template
+FROM php:7.4-fpm-alpine3.14
 
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
@@ -9,7 +10,7 @@ RUN set -ex; \
     ; \
     \
     rm /var/spool/cron/crontabs/root; \
-    echo '*/%%CRONTAB_INT%% * * * * php -f /var/www/html/cron.php' > /var/spool/cron/crontabs/www-data
+    echo '*/5 * * * * php -f /var/www/html/cron.php' > /var/spool/cron/crontabs/www-data
 
 # install the PHP extensions we need
 # see https://docs.nextcloud.com/server/stable/admin_manual/installation/source_installation.html
@@ -55,10 +56,10 @@ RUN set -ex; \
     ; \
     \
 # pecl will claim success even if one install fails, so we need to perform each install separately
-    pecl install APCu-%%APCU_VERSION%%; \
-    pecl install memcached-%%MEMCACHED_VERSION%%; \
-    pecl install redis-%%REDIS_VERSION%%; \
-    pecl install imagick-%%IMAGICK_VERSION%%; \
+    pecl install APCu-5.1.20; \
+    pecl install memcached-3.1.5; \
+    pecl install redis-5.3.4; \
+    pecl install imagick-3.5.1; \
     \
     docker-php-ext-enable \
         apcu \
@@ -103,9 +104,9 @@ RUN { \
     chmod -R g=u /var/www
 
 VOLUME /var/www/html
-%%VARIANT_EXTRAS%%
 
-ENV NEXTCLOUD_VERSION %%VERSION%%
+
+ENV NEXTCLOUD_VERSION 22.1.0
 
 RUN set -ex; \
     apk add --no-cache --virtual .fetch-deps \
@@ -115,9 +116,9 @@ RUN set -ex; \
     ; \
     \
     curl -fsSL -o nextcloud.tar.bz2 \
-        "%%BASE_DOWNLOAD_URL%%/nextcloud-${NEXTCLOUD_VERSION}.tar.bz2"; \
+        "https://download.nextcloud.com/server/releases/nextcloud-${NEXTCLOUD_VERSION}.tar.bz2"; \
     curl -fsSL -o nextcloud.tar.bz2.asc \
-        "%%BASE_DOWNLOAD_URL%%/nextcloud-${NEXTCLOUD_VERSION}.tar.bz2.asc"; \
+        "https://download.nextcloud.com/server/releases/nextcloud-${NEXTCLOUD_VERSION}.tar.bz2.asc"; \
     export GNUPGHOME="$(mktemp -d)"; \
 # gpg key from https://nextcloud.com/nextcloud.asc
     gpg --batch --keyserver keyserver.ubuntu.com  --recv-keys 28806A878AE423A28372792ED75899B9A724937A; \
@@ -138,4 +139,4 @@ COPY *.sh upgrade.exclude /
 COPY config/* /usr/src/nextcloud/config/
 
 ENTRYPOINT ["/entrypoint.sh"]
-CMD ["%%CMD%%"]
+CMD ["php-fpm"]

@@ -52,7 +52,7 @@ Database:
 ```console
 $ docker run -d \
 -v db:/var/lib/mysql \
-mariadb
+mariadb:10.5
 ```
 
 If you want to get fine grained access to your individual files, you can mount additional volumes for data, config, your theme and custom apps. The `data`, `config` files are stored in respective subfolders inside `/var/www/html/`. The apps are split into core `apps` (which are shipped with Nextcloud and you don't need to take care of) and a `custom_apps` folder. If you use a custom theme it would go into the `themes` subfolder.
@@ -214,7 +214,7 @@ volumes:
 
 services:
   db:
-    image: mariadb
+    image: mariadb:10.5
     restart: always
     command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
     volumes:
@@ -260,7 +260,7 @@ volumes:
 
 services:
   db:
-    image: mariadb
+    image: mariadb:10.5
     restart: always
     command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
     volumes:
@@ -359,7 +359,7 @@ secrets:
     file: ./postgres_user.txt # put postgresql username to this file
 ```
 
-Currently, this is only supported for `NEXTCLOUD_ADMIN_PASSWORD`, `NEXTCLOUD_ADMIN_USER`, `MYSQL_DATABASE`, `MYSQL_PASSWORD`, `MYSQL_USER`, `POSTGRES_DB`, `POSTGRES_PASSWORD`, `POSTGRES_USER` and `REDIS_HOST_PASSWORD`.
+Currently, this is only supported for `NEXTCLOUD_ADMIN_PASSWORD`, `NEXTCLOUD_ADMIN_USER`, `MYSQL_DATABASE`, `MYSQL_PASSWORD`, `MYSQL_USER`, `POSTGRES_DB`, `POSTGRES_PASSWORD`, `POSTGRES_USER`, `REDIS_HOST_PASSWORD` and `SMTP_PASSWORD`.
 
 # Make your Nextcloud available from the internet
 Until here, your Nextcloud is just available from your docker host. If you want your Nextcloud available from the internet adding SSL encryption is mandatory.
@@ -529,10 +529,8 @@ You're already using Nextcloud and want to switch to docker? Great! Here are som
 If you got any questions or problems using the image, please visit our [Github Repository](https://github.com/nextcloud/docker) and write an issue.
 
 ENV NEXTCLOUD_VERSION 18.0.14
-ENV NEXTCLOUD_VERSION 19.0.11RC1
 ENV NEXTCLOUD_VERSION 19.0.13
-ENV NEXTCLOUD_VERSION 20.0.11
-ENV NEXTCLOUD_VERSION 21.0.3
-ENV NEXTCLOUD_VERSION 22.0.0
-ENV NEXTCLOUD_VERSION 22.0.0beta5
-Last updated: 2021-08-02
+ENV NEXTCLOUD_VERSION 20.0.12
+ENV NEXTCLOUD_VERSION 21.0.4
+ENV NEXTCLOUD_VERSION 22.1.0
+Last updated: 2021-08-13
