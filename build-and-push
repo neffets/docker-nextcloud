@@ -2,6 +2,9 @@
 
 LatestVERSION="21"
 
+# freshen the basis
+docker image pull php:7.4-apache-buster
+
 # manual autobuild
 for VERSION in \
     "18" \
