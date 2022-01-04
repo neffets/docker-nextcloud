@@ -12,6 +12,7 @@ for VERSION in \
     "20" \
     "21" \
     "22" \
+    "23" \
     ;
 do
     echo "VERSION $VERSION"

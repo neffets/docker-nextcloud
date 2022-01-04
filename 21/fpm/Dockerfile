@@ -66,7 +66,7 @@ RUN set -ex; \
 # pecl will claim success even if one install fails, so we need to perform each install separately
     pecl install APCu-5.1.21; \
     pecl install memcached-3.1.5; \
-    pecl install redis-5.3.4; \
+    pecl install redis-5.3.5; \
     pecl install imagick-3.5.1; \
     \
     docker-php-ext-enable \
@@ -117,7 +117,7 @@ RUN { \
 VOLUME /var/www/html
 
 
-ENV NEXTCLOUD_VERSION 21.0.6
+ENV NEXTCLOUD_VERSION 21.0.7
 
 RUN set -ex; \
     fetchDeps=" \
