@@ -22,7 +22,7 @@ Now you can access Nextcloud at http://localhost:8080/ from your host system.
 
 
 ## Using the fpm image
-To use the fpm image, you need an additional web server that can proxy http-request to the fpm-port of the container. For fpm connection this container exposes port 9000. In most cases, you might want use another container or your host as proxy. If you use your host you can address your Nextcloud container directly on port 9000. If you use another container, make sure that you add them to the same docker network (via `docker run --network <NAME> ...` or a `docker-compose` file). In both cases you don't want to map the fpm port to your host.
+To use the fpm image, you need an additional web server, such as [nginx](https://docs.nextcloud.com/server/latest/admin_manual/installation/nginx.html), that can proxy http-request to the fpm-port of the container. For fpm connection this container exposes port 9000. In most cases, you might want use another container or your host as proxy. If you use your host you can address your Nextcloud container directly on port 9000. If you use another container, make sure that you add them to the same docker network (via `docker run --network <NAME> ...` or a `docker-compose` file). In both cases you don't want to map the fpm port to your host.
 
 ```console
 $ docker run -d nextcloud:fpm
@@ -104,7 +104,9 @@ __PostgreSQL__:
 - `POSTGRES_PASSWORD` Password for the database user using postgres.
 - `POSTGRES_HOST` Hostname of the database server using postgres.
 
-If you set any values, they will not be asked in the install page on first run. With a complete configuration by using all variables for your database type, you can additionally configure your Nextcloud instance by setting admin user and password (only works if you set both):
+As an alternative to passing sensitive information via environment variables, `_FILE` may be appended to the previously listed environment variables, causing the initialization script to load the values for those variables from files present in the container. See [Docker secrets](#docker=secrets) section below.
+
+If you set any group of values (i.e. all of `MYSQL_DATABASE`, `MYSQL_USER`, `MYSQL_PASSWORD`, `MYSQL_HOST`), they will not be asked in the install page on first run. With a complete configuration by using all variables for your database type, you can additionally configure your Nextcloud instance by setting admin user and password (only works if you set both):
 
 - `NEXTCLOUD_ADMIN_USER` Name of the Nextcloud admin user.
 - `NEXTCLOUD_ADMIN_PASSWORD` Password for the Nextcloud admin user.
@@ -188,6 +190,7 @@ If the `TRUSTED_PROXIES` approach does not work for you, try using fixed values 
 
 - `OVERWRITEHOST` (empty by default): Set the hostname of the proxy. Can also specify a port.
 - `OVERWRITEPROTOCOL` (empty by default): Set the protocol of the proxy, http or https.
+- `OVERWRITECLIURL` (empty by default): Set the cli url of the proxy (e.g. https://mydnsname.example.com)
 - `OVERWRITEWEBROOT` (empty by default): Set the absolute path of the proxy.
 - `OVERWRITECONDADDR` (empty by default): Regex to overwrite the values dependent on the remote address.
 
@@ -348,18 +351,20 @@ volumes:
 
 secrets:
   nextcloud_admin_password:
-    file: ./nextcloud_admin_password.txt # put admin password to this file
+    file: ./nextcloud_admin_password.txt # put admin password in this file
   nextcloud_admin_user:
-    file: ./nextcloud_admin_user.txt # put admin username to this file
+    file: ./nextcloud_admin_user.txt # put admin username in this file
   postgres_db:
-    file: ./postgres_db.txt # put postgresql db name to this file
+    file: ./postgres_db.txt # put postgresql db name in this file
   postgres_password:
-    file: ./postgres_password.txt # put postgresql password to this file
+    file: ./postgres_password.txt # put postgresql password in this file
   postgres_user:
-    file: ./postgres_user.txt # put postgresql username to this file
+    file: ./postgres_user.txt # put postgresql username in this file
 ```
 
 Currently, this is only supported for `NEXTCLOUD_ADMIN_PASSWORD`, `NEXTCLOUD_ADMIN_USER`, `MYSQL_DATABASE`, `MYSQL_PASSWORD`, `MYSQL_USER`, `POSTGRES_DB`, `POSTGRES_PASSWORD`, `POSTGRES_USER`, `REDIS_HOST_PASSWORD` and `SMTP_PASSWORD`.
+
+If you set any group of values (i.e. all of `MYSQL_DATABASE_FILE`, `MYSQL_USER_FILE`, `MYSQL_PASSWORD_FILE`, `MYSQL_HOST`), the script will not use the corresponding group of environment variables (`MYSQL_DATABASE`, `MYSQL_USER`, `MYSQL_PASSWORD`, `MYSQL_HOST`)
 
 # Make your Nextcloud available from the internet
 Until here, your Nextcloud is just available from your docker host. If you want your Nextcloud available from the internet adding SSL encryption is mandatory.
@@ -458,7 +463,7 @@ You're already using Nextcloud and want to switch to docker? Great! Here are som
     - To import from a MySQL dump use the following commands
     ```console
     docker cp ./database.dmp nextcloud_db_1:/dmp
-    docker-compose exec db sh -c "mysql -u USER -pPASSWORD nextcloud < /dmp"
+    docker-compose exec db sh -c "mysql -u USER -p PASSWORD nextcloud < /dmp"
     docker-compose exec db rm /dmp
     ```
     - To import from a PostgreSQL dump use to following commands
@@ -534,4 +539,4 @@ ENV NEXTCLOUD_VERSION 20.0.14
 ENV NEXTCLOUD_VERSION 21.0.7
 ENV NEXTCLOUD_VERSION 22.2.3
 ENV NEXTCLOUD_VERSION 23.0.0
-Last updated: 2022-01-04
+Last updated: 2022-01-16

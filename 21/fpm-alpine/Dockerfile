@@ -1,5 +1,5 @@
 # DO NOT EDIT: created by update.sh from Dockerfile-alpine.template
-FROM php:7.4-fpm-alpine3.14
+FROM php:7.4-fpm-alpine3.15
 
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
@@ -59,7 +59,7 @@ RUN set -ex; \
     pecl install APCu-5.1.21; \
     pecl install memcached-3.1.5; \
     pecl install redis-5.3.5; \
-    pecl install imagick-3.5.1; \
+    pecl install imagick-3.7.0; \
     \
     docker-php-ext-enable \
         apcu \

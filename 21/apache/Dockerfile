@@ -1,5 +1,5 @@
 # DO NOT EDIT: created by update.sh from Dockerfile-debian.template
-FROM php:7.4-apache-buster
+FROM php:7.4-apache-bullseye
 
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
@@ -9,6 +9,7 @@ RUN set -ex; \
         rsync \
         bzip2 \
         busybox-static \
+        libldap-common \
         sudo \
     ; \
     rm -rf /var/lib/apt/lists/*; \
@@ -67,7 +68,7 @@ RUN set -ex; \
     pecl install APCu-5.1.21; \
     pecl install memcached-3.1.5; \
     pecl install redis-5.3.5; \
-    pecl install imagick-3.5.1; \
+    pecl install imagick-3.7.0; \
     \
     docker-php-ext-enable \
         apcu \
