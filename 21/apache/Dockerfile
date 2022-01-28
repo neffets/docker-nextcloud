@@ -66,8 +66,8 @@ RUN set -ex; \
 # pecl will claim success even if one install fails, so we need to perform each install separately
     pecl install APCu-5.1.21; \
     pecl install memcached-3.1.5; \
-    pecl install redis-5.3.5; \
-    pecl install imagick-3.5.1; \
+    pecl install redis-5.3.6; \
+    pecl install imagick-3.7.0; \
     \
     docker-php-ext-enable \
         apcu \
@@ -125,7 +125,7 @@ RUN a2enmod headers rewrite remoteip ;\
     } > /etc/apache2/conf-available/remoteip.conf;\
     a2enconf remoteip
 
-ENV NEXTCLOUD_VERSION 21.0.7
+ENV NEXTCLOUD_VERSION 21.0.8
 
 RUN set -ex; \
     fetchDeps=" \
