@@ -1,5 +1,5 @@
 # DO NOT EDIT: created by update.sh from Dockerfile-debian.template
-FROM php:7.4-fpm-buster
+FROM php:8.0-fpm-bullseye
 
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
@@ -9,6 +9,7 @@ RUN set -ex; \
         rsync \
         bzip2 \
         busybox-static \
+        libldap-common \
         sudo \
     ; \
     rm -rf /var/lib/apt/lists/*; \
