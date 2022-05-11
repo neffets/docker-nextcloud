@@ -217,5 +217,6 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
         fi
     fi
 fi
+perl -pi -e 's# /remote.php# https://%{SERVER_NAME}/remote.php#' /var/www/html/.htaccess
 
 exec "$@"

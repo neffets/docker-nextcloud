@@ -10,6 +10,7 @@ RUN set -ex; \
         bzip2 \
         busybox-static \
         libldap-common \
+        sudo \
     ; \
     rm -rf /var/lib/apt/lists/*; \
     \
@@ -40,12 +41,14 @@ RUN set -ex; \
         libmagickwand-dev \
         libzip-dev \
         libwebp-dev \
+        libc-client-dev libkrb5-dev \
         libgmp-dev \
     ; \
     \
     debMultiarch="$(dpkg-architecture --query DEB_BUILD_MULTIARCH)"; \
     docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp; \
     docker-php-ext-configure ldap --with-libdir="lib/$debMultiarch"; \
+    docker-php-ext-configure imap --with-kerberos --with-imap-ssl; \
     docker-php-ext-install -j "$(nproc)" \
         bcmath \
         exif \
@@ -57,6 +60,7 @@ RUN set -ex; \
         pdo_mysql \
         pdo_pgsql \
         zip \
+        imap \
         gmp \
     ; \
     \
@@ -147,6 +151,9 @@ RUN set -ex; \
     mkdir -p /usr/src/nextcloud/data; \
     mkdir -p /usr/src/nextcloud/custom_apps; \
     chmod +x /usr/src/nextcloud/occ; \
+    echo '#!/bin/bash' >/usr/local/bin/occ \
+    echo 'sudo -u www-data php /var/www/html/occ $@' >>/usr/local/bin/occ \
+    chmod 0755 /usr/local/bin/occ \
     \
     apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $fetchDeps; \
     rm -rf /var/lib/apt/lists/*

@@ -6,6 +6,7 @@ RUN set -ex; \
     \
     apk add --no-cache \
         rsync \
+        sudo \
     ; \
     \
     rm /var/spool/cron/crontabs/root; \
@@ -32,11 +33,13 @@ RUN set -ex; \
         postgresql-dev \
         imagemagick-dev \
         libwebp-dev \
+        imap-dev krb5-dev \
         gmp-dev \
     ; \
     \
     docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp; \
     docker-php-ext-configure ldap; \
+    docker-php-ext-configure imap --with-kerberos --with-imap-ssl; \
     docker-php-ext-install -j "$(nproc)" \
         bcmath \
         exif \
@@ -48,6 +51,7 @@ RUN set -ex; \
         pdo_mysql \
         pdo_pgsql \
         zip \
+        imap \
         gmp \
     ; \
     \
@@ -108,6 +112,7 @@ RUN set -ex; \
     apk add --no-cache --virtual .fetch-deps \
         bzip2 \
         gnupg \
+        perl \
     ; \
     \
     curl -fsSL -o nextcloud.tar.bz2 \
@@ -125,6 +130,9 @@ RUN set -ex; \
     mkdir -p /usr/src/nextcloud/data; \
     mkdir -p /usr/src/nextcloud/custom_apps; \
     chmod +x /usr/src/nextcloud/occ; \
+    echo '#!/bin/bash' >/usr/local/bin/occ \
+    echo 'sudo -u www-data php /var/www/html/occ $@' >>/usr/local/bin/occ \
+    chmod 0755 /usr/local/bin/occ \
     apk del .fetch-deps
 
 COPY *.sh upgrade.exclude /
