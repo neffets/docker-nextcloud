@@ -32,7 +32,7 @@ declare -A crontab_int=(
 apcu_version="$(
 	git ls-remote --tags https://github.com/krakjoe/apcu.git \
 		| cut -d/ -f3 \
-		| grep -vE -- '-rc|-b' \
+		| grep -viE -- 'rc|b' \
 		| sed -E 's/^v//' \
 		| sort -V \
 		| tail -1
@@ -41,7 +41,7 @@ apcu_version="$(
 memcached_version="$(
 	git ls-remote --tags https://github.com/php-memcached-dev/php-memcached.git \
 		| cut -d/ -f3 \
-		| grep -vE -- '-rc|-b' \
+		| grep -viE -- 'rc|b' \
 		| sed -E 's/^[rv]//' \
 		| sort -V \
 		| tail -1
@@ -113,21 +113,9 @@ function create_variant() {
 		s/%%REDIS_VERSION%%/'"${pecl_versions[redis]}"'/g;
 		s/%%IMAGICK_VERSION%%/'"${pecl_versions[imagick]}"'/g;
 		s/%%CRONTAB_INT%%/'"$crontabInt"'/g;
+		\@docker-php-ext-configure gmp --with-gmp@d;
+		\@/usr/include/gmp.h@d;
 	' "$dir/Dockerfile"
-
-	case "$phpVersion" in
-		7.4|8.0 )
-			sed -ri -e '
-				\@docker-php-ext-configure gmp --with-gmp@d;
-				\@/usr/include/gmp.h@d;
-				' "$dir/Dockerfile"
-			;;
-		7.3 )
-			sed -ri -e '
-				s@gd --with-freetype --with-jpeg --with-webp@gd --with-freetype-dir=/usr --with-png-dir=/usr --with-jpeg-dir=/usr --with-webp-dir=/usr@g;
-				' "$dir/Dockerfile"
-			;;
-	esac
 
 	# Copy the shell scripts
 	for name in entrypoint cron; do
