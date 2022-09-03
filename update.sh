@@ -79,7 +79,7 @@ variants=(
 )
 
 min_version='20'
-#min_version='22'
+#min_version='23'
 
 # version_greater_or_equal A B returns whether A >= B
 function version_greater_or_equal() {
