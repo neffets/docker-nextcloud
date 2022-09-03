@@ -103,12 +103,13 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
         fi
 
         # If another process is syncing the html folder, wait for
-        # it to be done, then escape initalization
+        # it to be done, then escape initalization.
+        # You need to define the NEXTCLOUD_INIT_LOCK environment variable
         lock=/var/www/html/nextcloud-init-sync.lock
         count=0
         limit=10
 
-        if [ -f "$lock" ]; then
+        if [ -f "$lock" ] && [ -n "${NEXTCLOUD_INIT_LOCK+x}" ]; then
             until [ ! -f "$lock" ] || [ "$count" -gt "$limit" ]
             do
                 count=$((count+1))
@@ -216,6 +217,12 @@ if expr "$1" : "apache" 1>/dev/null || [ "$1" = "php-fpm" ] || [ "${NEXTCLOUD_UP
             echo "Initializing finished"
         fi
     fi
+
+    # Update htaccess after init if requested
+    if [ -n "${NEXTCLOUD_INIT_HTACCESS+x}" ]; then
+        run_as 'php /var/www/html/occ maintenance:update:htaccess'
+    fi
+
 fi
 perl -pi -e 's# /remote.php# https://%{SERVER_NAME}/remote.php#' /var/www/html/.htaccess
 
