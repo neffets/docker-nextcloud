@@ -3,7 +3,8 @@
 LatestVERSION="21"
 
 # freshen the basis
-docker image pull php:7.4-apache-buster
+docker image pull php:7.4-apache-bullseye
+docker image pull php:8.0-apache-bullseye
 
 # manual autobuild
 for VERSION in \
@@ -11,12 +12,13 @@ for VERSION in \
     "21" \
     "22" \
     "23" \
+    "24" \
     ;
 do
     echo "VERSION $VERSION"
     LATEST=
     [ "${LatestVERSION}" == "${VERSION}" ] && LATEST="-t neffets/nextcloud:latest"
-    docker build -t neffets/nextcloud:${VERSION} ${LATEST} -f ${VERSION}/apache/Dockerfile ${VERSION}/apache/
+    docker build -t neffets/nextcloud:${VERSION} ${LATEST} -f ${VERSION}/apache/Dockerfile ${VERSION}/apache/ || exit
     docker push neffets/nextcloud:${VERSION}
     [ -s "${LATEST}" ] && docker push neffets/nextcloud:latest
 done
