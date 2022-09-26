@@ -1,6 +1,6 @@
 #!/bin/bash
 
-LatestVERSION="21"
+LatestVERSION="22"
 
 # freshen the basis
 docker image pull php:7.4-apache-bullseye
@@ -8,6 +8,8 @@ docker image pull php:8.0-apache-bullseye
 
 # manual autobuild
 for VERSION in \
+    "24" \
+    "22" \
     "20" \
     "21" \
     "22" \
