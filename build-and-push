@@ -10,9 +10,7 @@ docker image pull php:8.0-apache-bullseye
 for VERSION in \
     "24" \
     "22" \
-    "22" \
     "23" \
-    "24" \
     ;
 do
     echo "VERSION $VERSION"
