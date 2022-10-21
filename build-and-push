@@ -10,8 +10,6 @@ docker image pull php:8.0-apache-bullseye
 for VERSION in \
     "24" \
     "22" \
-    "20" \
-    "21" \
     "22" \
     "23" \
     "24" \
