@@ -542,7 +542,7 @@ You're already using Nextcloud and want to switch to docker? Great! Here are som
 If you got any questions or problems using the image, please visit our [Github Repository](https://github.com/nextcloud/docker) and write an issue.
 
 ENV NEXTCLOUD_VERSION 22.2.10
-ENV NEXTCLOUD_VERSION 23.0.11
-ENV NEXTCLOUD_VERSION 24.0.7
-ENV NEXTCLOUD_VERSION 25.0.1
-Last updated: 2022-12-08
+ENV NEXTCLOUD_VERSION 23.0.12
+ENV NEXTCLOUD_VERSION 24.0.8
+ENV NEXTCLOUD_VERSION 25.0.2
+Last updated: 2022-12-09
