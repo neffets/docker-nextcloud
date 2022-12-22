@@ -471,7 +471,7 @@ You're already using Nextcloud and want to switch to docker? Great! Here are som
     - To import from a MySQL dump use the following commands
     ```console
     docker cp ./database.dmp nextcloud_db_1:/dmp
-    docker-compose exec db sh -c "mysql -u USER -p PASSWORD nextcloud < /dmp"
+    docker-compose exec db sh -c "mysql --user USER --password PASSWORD nextcloud < /dmp"
     docker-compose exec db rm /dmp
     ```
     - To import from a PostgreSQL dump use to following commands
@@ -541,7 +541,6 @@ You're already using Nextcloud and want to switch to docker? Great! Here are som
 # Questions / Issues
 If you got any questions or problems using the image, please visit our [Github Repository](https://github.com/nextcloud/docker) and write an issue.
 
-ENV NEXTCLOUD_VERSION 22.2.10
 ENV NEXTCLOUD_VERSION 23.0.12
 ENV NEXTCLOUD_VERSION 24.0.8
 ENV NEXTCLOUD_VERSION 25.0.2

@@ -1,5 +1,5 @@
 # DO NOT EDIT: created by update.sh from Dockerfile-debian.template
-FROM php:8.0-apache-bullseye
+FROM php:8.1-apache-bullseye
 
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
@@ -11,6 +11,7 @@ RUN set -ex; \
         busybox-static \
         libldap-common \
         sudo \
+        libmagickcore-6.q16-6-extra \
     ; \
     rm -rf /var/lib/apt/lists/*; \
     \
