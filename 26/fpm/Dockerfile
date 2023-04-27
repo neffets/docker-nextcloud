@@ -1,5 +1,5 @@
 # DO NOT EDIT: created by update.sh from Dockerfile-debian.template
-FROM php:8.0-fpm-bullseye
+FROM php:8.1-fpm-bullseye
 
 # entrypoint.sh and cron.sh dependencies
 RUN set -ex; \
@@ -119,7 +119,7 @@ RUN { \
 VOLUME /var/www/html
 
 
-ENV NEXTCLOUD_VERSION 24.0.12
+ENV NEXTCLOUD_VERSION 26.0.1
 
 RUN set -ex; \
     fetchDeps=" \
