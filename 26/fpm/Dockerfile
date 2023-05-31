@@ -63,6 +63,7 @@ RUN set -ex; \
         zip \
         imap \
         gmp \
+        sysvsem \
     ; \
     \
 # pecl will claim success even if one install fails, so we need to perform each install separately
@@ -119,7 +120,7 @@ RUN { \
 VOLUME /var/www/html
 
 
-ENV NEXTCLOUD_VERSION 26.0.1
+ENV NEXTCLOUD_VERSION 26.0.2
 
 RUN set -ex; \
     fetchDeps=" \
