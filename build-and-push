@@ -9,6 +9,7 @@ docker image pull php:8.1-apache-bullseye
 # manual autobuild
 for VERSION in \
     "26" \
+    "28" \
     "27" \
     "25" \
     "24" \
