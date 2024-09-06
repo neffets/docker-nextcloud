@@ -3,18 +3,17 @@
 LatestVERSION="28"
 
 # freshen the basis
-docker image pull php:8.0-apache-bullseye
 docker image pull php:8.1-apache-bullseye
+docker image pull php:8.2-apache-bullseye
 
 # manual autobuild
 for VERSION in \
+    "29" \
     "28" \
     "29" \
     "27" \
     "26" \
     "25" \
-    "24" \
-    "23" \
     ;
 do
     echo "VERSION $VERSION"
