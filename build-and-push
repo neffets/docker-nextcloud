@@ -3,8 +3,8 @@
 LatestVERSION="29"
 
 # freshen the basis
-docker image pull php:8.1-apache-bullseye
-docker image pull php:8.2-apache-bullseye
+docker image pull php:8.1-apache-bookworm
+docker image pull php:8.2-apache-bookworm
 
 # manual autobuild
 for VERSION in \
