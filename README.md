@@ -630,7 +630,7 @@ If you believe you've found a bug (or have an enhancement idea) in the image its
 Thanks for helping to make the Nextcloud community maintained micro-services image better!
 ENV NEXTCLOUD_VERSION 26.0.13
 ENV NEXTCLOUD_VERSION 27.1.11
-ENV NEXTCLOUD_VERSION 28.0.12
-ENV NEXTCLOUD_VERSION 29.0.9
-ENV NEXTCLOUD_VERSION 30.0.2
-Last updated: 2024-11-10
+ENV NEXTCLOUD_VERSION 28.0.14
+ENV NEXTCLOUD_VERSION 29.0.11
+ENV NEXTCLOUD_VERSION 30.0.5
+Last updated: 2025-01-21
