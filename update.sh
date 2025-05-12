@@ -10,12 +10,10 @@ declare -A debian_version=(
 )
 
 declare -A php_version=(
-    [26]='8.1'
-    [27]='8.1'
-    [28]='8.2'
-    [29]='8.2'
-	[default]='8.2'
-	[31]='8.3'
+	[27]='8.1'
+	[28]='8.2'
+	[29]='8.2'
+	[default]='8.3'
 )
 
 declare -A cmd=(
@@ -59,7 +57,7 @@ igbinary_version="$(
 )"
 
 imagick_version="$(
-	git ls-remote --tags https://github.com/mkoppanen/imagick.git \
+	git ls-remote --tags https://github.com/imagick/imagick.git \
 		| cut -d/ -f3 \
 		| grep -viE '[a-z]' \
 		| tr -d '^{}' \
@@ -99,7 +97,7 @@ variants=(
 	fpm-alpine
 )
 
-min_version='26'
+min_version='27'
 
 # version_greater_or_equal A B returns whether A >= B
 function version_greater_or_equal() {

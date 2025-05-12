@@ -73,7 +73,7 @@ Database:
 ```console
 $ docker run -d \
 -v db:/var/lib/mysql \
-mariadb:10.11
+mariadb:lts
 ```
 
 ### Additional volumes
@@ -394,8 +394,11 @@ Make sure to pass in values for `MYSQL_ROOT_PASSWORD` and `MYSQL_PASSWORD` varia
 
 ```yaml
 services:
+  # Note: MariaDB is external service. You can find more information about the configuration here:
+  # https://hub.docker.com/_/mariadb
   db:
-    image: mariadb:10.11
+    # Note: Check the recommend version here: https://docs.nextcloud.com/server/latest/admin_manual/installation/system_requirements.html#server
+    image: mariadb:lts
     restart: always
     command: --transaction-isolation=READ-COMMITTED
     volumes:
@@ -406,6 +409,8 @@ services:
       - MYSQL_DATABASE=nextcloud
       - MYSQL_USER=nextcloud
 
+  # Note: Redis is an external service. You can find more information about the configuration here:
+  # https://hub.docker.com/_/redis
   redis:
     image: redis:alpine
     restart: always
@@ -442,8 +447,11 @@ Make sure to pass in values for `MYSQL_ROOT_PASSWORD` and `MYSQL_PASSWORD` varia
 
 ```yaml
 services:
+  # Note: MariaDB is an external service. You can find more information about the configuration here:
+  # https://hub.docker.com/_/mariadb
   db:
-    image: mariadb:10.11
+    # Note: Check the recommend version here: https://docs.nextcloud.com/server/latest/admin_manual/installation/system_requirements.html#server
+    image: mariadb:lts
     restart: always
     command: --transaction-isolation=READ-COMMITTED
     volumes:
@@ -454,6 +462,8 @@ services:
       - MYSQL_DATABASE=nextcloud
       - MYSQL_USER=nextcloud
 
+  # Note: Redis is an external service. You can find more information about the configuration here:
+  # https://hub.docker.com/_/redis
   redis:
     image: redis:alpine
     restart: always
@@ -472,15 +482,18 @@ services:
       - MYSQL_USER=nextcloud
       - MYSQL_HOST=db
 
+  # Note: Nginx is an external service. You can find more information about the configuration here:
+  # https://hub.docker.com/_/nginx/
   web:
-    image: nginx
+    image: nginx:alpine-slim
     restart: always
     ports:
       - 8080:80
     depends_on:
       - app
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      # https://docs.nextcloud.com/server/latest/admin_manual/installation/nginx.html
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro 
     volumes_from:
       - app
 
@@ -505,8 +518,11 @@ Example:
 
 ```yaml
 services:
+  # Note: PostgreSQL is external service. You can find more information about the configuration here:
+  # https://hub.docker.com/_/postgres
   db:
-    image: postgres
+    # Note: Check the recommend version here: https://docs.nextcloud.com/server/latest/admin_manual/installation/system_requirements.html#server
+    image: postgres:alpine
     restart: always
     volumes:
       - db:/var/lib/postgresql/data
@@ -518,6 +534,8 @@ services:
       - postgres_db
       - postgres_password
       - postgres_user
+  # Note: Redis is an external service. You can find more information about the configuration here:
+  # https://hub.docker.com/_/redis
   redis:
     image: redis:alpine
     restart: always
@@ -764,10 +782,9 @@ Most Nextcloud Server matters are covered in the official [Nextcloud Admin Manua
 
 ## Status
 
-ENV NEXTCLOUD_VERSION 26.0.13
 ENV NEXTCLOUD_VERSION 27.1.11
 ENV NEXTCLOUD_VERSION 28.0.14
 ENV NEXTCLOUD_VERSION 29.0.16
 ENV NEXTCLOUD_VERSION 30.0.10
 ENV NEXTCLOUD_VERSION 31.0.4
-Last updated: 2025-04-18
+Last updated: 2025-05-12

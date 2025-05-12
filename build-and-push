@@ -5,11 +5,11 @@ LatestVERSION="30"
 # freshen the basis
 docker image pull php:8.1-apache-bookworm
 docker image pull php:8.2-apache-bookworm
+docker image pull php:8.3-apache-bookworm
 
 # manual autobuild
 for VERSION in \
     "30" \
-    "26" \
     "27" \
     "28" \
     "29" \
