@@ -6,6 +6,46 @@ A safe home for all your data. Access & share your files, calendars, contacts, m
 
 ⚠️⚠️⚠️ This image is maintained by community volunteers and designed for expert use. For quick and easy deployment that supports the full set of Nextcloud Hub features, use the [Nextcloud All-in-One docker container](https://github.com/nextcloud/all-in-one#nextcloud-all-in-one) maintained by Nextcloud GmbH.
 
+## Table of Contents
+- [What is Nextcloud?](#what-is-nextcloud)
+- [How to use this image](#how-to-use-this-image)
+  - [Getting help](#getting-help)
+  - [Using the apache image](#using-the-apache-image)
+  - [Using the fpm image](#using-the-fpm-image)
+  - [Using an external database](#using-an-external-database)
+  - [Persistent data](#persistent-data)
+    - [Additional volumes](#additional-volumes)
+    - [Custom volumes](#custom-volumes)
+  - [Running as an arbitrary user / file permissions / changing the default container user](#running-as-an-arbitrary-user--file-permissions--changing-the-default-container-user)
+  - [Accessing the Nextcloud command-line interface (`occ`)](#accessing-the-nextcloud-command-line-interface-occ)
+  - [Viewing the Nextcloud configuration (`config.php`)](#viewing-the-nextcloud-configuration-configphp)
+  - [Auto configuration via environment variables](#auto-configuration-via-environment-variables)
+    - [Database parameters](#database-parameters)
+    - [Initial admin account](#initial-admin-account)
+    - [Custom Data directory (`datadirectory`)](#custom-data-directory-datadirectory)
+    - [Trusted domains (`trusted_domains`)](#trusted-domains-trusted_domains)
+    - [Image specific](#image-specific)
+    - [Redis Memory Caching](#redis-memory-caching)
+    - [E-mail (SMTP) Configuration](#e-mail-smtp-configuration)
+    - [Object Storage (Primary Storage)](#object-storage-primary-storage)
+    - [PHP Configuration](#php-configuration)
+    - [Apache Configuration](#apache-configuration)
+    - [Using the image behind a reverse proxy and specifying the server host and protocol](#using-the-image-behind-a-reverse-proxy-and-specifying-the-server-host-and-protocol)
+    - [Handling `Warning: /var/www/html/config/$cfgFile differs from the latest version of this image at /usr/src/nextcloud/config/$cfgFile` (aka: Auto configuration and Nextcloud updates)](#handling-warning-varwwwhtmlconfigcfgfile-differs-from-the-latest-version-of-this-image-at-usrsrcnextcloudconfigcfgfile-aka-auto-configuration-and-nextcloud-updates)
+  - [Auto configuration via hook folders](#auto-configuration-via-hook-folders)
+- [Running this image with `docker compose`](#running-this-image-with-docker-compose)
+  - [Base version - apache](#base-version---apache)
+  - [Base version - FPM](#base-version---fpm)
+- [Docker Secrets](#docker-secrets)
+- [Make your Nextcloud available from the internet](#make-your-nextcloud-available-from-the-internet)
+  - [HTTPS - SSL encryption](#https---ssl-encryption)
+- [First use](#first-use)
+- [Update to a newer version](#update-to-a-newer-version)
+- [Adding Features](#adding-features)
+- [Migrating an existing installation](#migrating-an-existing-installation)
+  - [Migrating from a non-Alpine image to an Alpine image](#migrating-from-a-non-alpine-image-to-an-alpine-image)
+- [Reporting bugs or suggesting enhancements](#reporting-bugs-or-suggesting-enhancements)
+
 # How to use this image
 This image is designed to be used in a micro-service environment. There are two versions of the image you can choose from.
 
@@ -146,7 +186,7 @@ See:
 
 ## Accessing the Nextcloud command-line interface (`occ`)
 
-To use the [Nextcloud command-line interface](https://docs.nextcloud.com/server/latest/admin_manual/configuration_server/occ_command.html) (aka. `occ` command):
+To use the [Nextcloud command-line interface](https://docs.nextcloud.com/server/latest/admin_manual/occ_command.html) (aka. `occ` command):
 ```console
 $ docker exec -it --user www-data CONTAINER_ID php occ
 ```
@@ -690,6 +730,7 @@ You're already using Nextcloud and want to switch to docker? Great! Here are som
     docker compose exec db rm /dmp
     ```
 3. Edit your config.php
+3. Edit your config.php
     1. Set database connection
         - In case of MySQL database
         ```php
@@ -699,17 +740,7 @@ You're already using Nextcloud and want to switch to docker? Great! Here are som
         ```php
         'dbhost' => 'db:5432',
         ```
-    2. Make sure you have no configuration for the `apps_paths`. Delete lines like these
-        ```php
-        'apps_paths' => array (
-            0 => array (
-                'path' => OC::$SERVERROOT.'/apps',
-                'url' => '/apps',
-                'writable' => true,
-            ),
-        ),
-        ```
-    3. Make sure to have the `apps` directory non writable and the `custom_apps` directory writable
+    2. Replace any existing `apps_paths` configuration with the following Docker-compatible version. Your existing configuration may look different (e.g. using `OC::$SERVERROOT.'/apps'` or having only a single entry), but it must be replaced with exactly this to ensure shipped apps in `apps` are non-writable and user-installed apps go to `custom_apps`:
         ```php
         'apps_paths' => array (
           0 => array (
@@ -724,7 +755,7 @@ You're already using Nextcloud and want to switch to docker? Great! Here are som
           ),
         ),
         ```
-    4. Make sure your data directory is set to /var/www/html/data
+    3. Make sure your data directory is set to /var/www/html/data
         ```php
         'datadirectory' => '/var/www/html/data',
         ```
@@ -782,7 +813,6 @@ Most Nextcloud Server matters are covered in the official [Nextcloud Admin Manua
 
 ## Status
 
-ENV NEXTCLOUD_VERSION 28.0.14
 ENV NEXTCLOUD_VERSION 29.0.16
 ENV NEXTCLOUD_VERSION 30.0.17
 ENV NEXTCLOUD_VERSION 31.0.14
