@@ -20,7 +20,7 @@ do
     echo "VERSION $VERSION"
     LATEST=
     [ "${LatestVERSION}" == "${VERSION}" ] && LATEST="-t neffets/nextcloud:latest"
-    docker build -t neffets/nextcloud:${VERSION} ${LATEST} -f ${VERSION}/apache/Dockerfile ${VERSION}/apache/ || exit
+    docker buildx build -t neffets/nextcloud:${VERSION} ${LATEST} -f ${VERSION}/apache/Dockerfile ${VERSION}/apache/ || exit
     docker push neffets/nextcloud:${VERSION}
     [ -s "${LATEST}" ] && docker push neffets/nextcloud:latest
 done
