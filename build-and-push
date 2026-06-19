@@ -3,9 +3,9 @@
 LatestVERSION="30"
 
 # freshen the basis
-docker image pull php:8.1-apache-trixie
-docker image pull php:8.2-apache-trixie
 docker image pull php:8.3-apache-trixie
+docker image pull php:8.4-apache-trixie
+docker image pull php:8.5-apache-trixie
 
 # manual autobuild
 for VERSION in \
