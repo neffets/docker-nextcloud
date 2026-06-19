@@ -9,11 +9,11 @@ docker image pull php:8.3-apache-trixie
 
 # manual autobuild
 for VERSION in \
-    "30" \
+    "32" \
     "30" \
     "31" \
-    "32" \
     "33" \
+    "34" \
     ;
 do
     echo "VERSION $VERSION"
