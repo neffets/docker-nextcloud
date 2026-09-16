@@ -19,6 +19,8 @@ declare -A php_version=(
 )
 
 declare -A ftp_options=(
+	[30]='--with-openssl-dir=/usr'
+	[31]='--with-openssl-dir=/usr'
 	[32]='--with-openssl-dir=/usr'
 	[default]='--with-ftp-ssl'
 )
