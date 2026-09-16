@@ -1,6 +1,6 @@
 #!/bin/bash
 
-LatestVERSION="30"
+LatestVERSION="33"
 
 # freshen the basis
 docker image pull php:8.3-apache-trixie
@@ -12,8 +12,8 @@ for VERSION in \
     "33" \
     "32" \
     "31" \
-    "30" \
     "34" \
+    "35" \
     ;
 do
     echo "VERSION $VERSION"
