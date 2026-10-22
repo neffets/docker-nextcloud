@@ -10,7 +10,6 @@ declare -A debian_version=(
 )
 
 declare -A php_version=(
-	[30]='8.3'
 	[31]='8.3'
 	[32]='8.3'
 	[33]='8.4'
@@ -19,7 +18,6 @@ declare -A php_version=(
 )
 
 declare -A ftp_options=(
-	[30]='--with-openssl-dir=/usr'
 	[31]='--with-openssl-dir=/usr'
 	[32]='--with-openssl-dir=/usr'
 	[default]='--with-ftp-ssl'
