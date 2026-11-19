@@ -19,9 +19,9 @@ RUN set -ex; \
 
 # install the PHP extensions we need
 # see https://docs.nextcloud.com/server/stable/admin_manual/installation/source_installation.html
-ENV PHP_MEMORY_LIMIT 512M
-ENV PHP_UPLOAD_LIMIT 512M
-ENV PHP_OPCACHE_MEMORY_CONSUMPTION 128
+ENV PHP_MEMORY_LIMIT=512M
+ENV PHP_UPLOAD_LIMIT=512M
+ENV PHP_OPCACHE_MEMORY_CONSUMPTION=128
 RUN set -ex; \
     \
     savedAptMark="$(apt-mark showmanual)"; \
@@ -43,6 +43,7 @@ RUN set -ex; \
         libwebp-dev \
         libxml2-dev \
         libzip-dev \
+        libssh2-1-dev \
     ; \
     \
     debMultiarch="$(dpkg-architecture --query DEB_BUILD_MULTIARCH)"; \
@@ -72,6 +73,7 @@ RUN set -ex; \
         memcached-3.4.0; \
     pecl install --configureoptions 'enable-redis-igbinary="yes" enable-redis-zstd="yes" enable-redis-lz4="yes"' \
         redis-6.3.0; \
+    pecl install ssh2; \
     \
     docker-php-ext-enable \
         apcu \
@@ -79,6 +81,7 @@ RUN set -ex; \
         imagick \
         memcached \
         redis \
+        ssh2 \
     ; \
     rm -r /tmp/pear; \
     \
@@ -136,7 +139,7 @@ RUN { \
 VOLUME /var/www/html
 
 
-ENV NEXTCLOUD_VERSION 33.0.11
+ENV NEXTCLOUD_VERSION=33.0.11
 
 RUN set -ex; \
     fetchDeps=" \

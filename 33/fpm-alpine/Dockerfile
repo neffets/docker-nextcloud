@@ -38,6 +38,7 @@ RUN set -ex; \
         openldap-dev \
         pcre-dev \
         postgresql-dev \
+        libssh2-dev \
     ; \
     \
     docker-php-ext-configure ftp --with-ftp-ssl; \
@@ -66,6 +67,7 @@ RUN set -ex; \
         memcached-3.4.0; \
     pecl install --configureoptions 'enable-redis-igbinary="yes" enable-redis-zstd="yes" enable-redis-lz4="yes"' \
         redis-6.3.0; \
+    pecl install ssh2; \
     \
     docker-php-ext-enable \
         apcu \
@@ -73,6 +75,7 @@ RUN set -ex; \
         imagick \
         memcached \
         redis \
+        ssh2 \
     ; \
     rm -r /tmp/pear; \
     \
